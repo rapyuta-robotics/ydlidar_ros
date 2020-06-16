@@ -240,7 +240,10 @@ int fhs_lock(const char *filename, int pid) {
 
   sprintf(lockinfo, "%10d\n", (int) getpid());
   printf("fhs_lock: creating lockfile: %s\n", lockinfo);
-  write(fd, lockinfo, 11);
+  if (write(fd, lockinfo, 11) < 11) {
+    close(fd);
+    return 1;
+  }
   close(fd);
   return 0;
 }
@@ -325,7 +328,10 @@ int uucp_lock(const char *filename, int pid) {
     return 1;
   }
 
-  write(fd, lockinfo, 11);
+  if (write(fd, lockinfo, 11) < 11) {
+    close(fd);
+    return 1;
+  }
   close(fd);
   return 0;
 }
@@ -770,7 +776,10 @@ int is_device_locked(const char *port_filename) {
 
     /* check if its a stale lock */
     fd = open(file, O_RDONLY);
-    read(fd, pid_buffer, 11);
+    if (read(fd, pid_buffer, 11) < 0) {
+      close(fd);
+      return 1;
+    }
     /* FIXME null terminiate pid_buffer? need to check in Solaris */
     close(fd);
     sscanf(pid_buffer, "%d", &pid);
