@@ -240,7 +240,7 @@ int fhs_lock(const char *filename, int pid) {
 
   sprintf(lockinfo, "%10d\n", (int) getpid());
   printf("fhs_lock: creating lockfile: %s\n", lockinfo);
-  if (write(fd, lockinfo, 11) < 0) {
+  if (write(fd, lockinfo, 11) < 11) {
     close(fd);
     return 1;
   }
@@ -328,7 +328,7 @@ int uucp_lock(const char *filename, int pid) {
     return 1;
   }
 
-  if (write(fd, lockinfo, 11) < 0) {
+  if (write(fd, lockinfo, 11) < 11) {
     close(fd);
     return 1;
   }
